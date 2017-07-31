@@ -1,0 +1,2 @@
+# ScriptTempletesGenerator
+スクリプトテンプレート生成
