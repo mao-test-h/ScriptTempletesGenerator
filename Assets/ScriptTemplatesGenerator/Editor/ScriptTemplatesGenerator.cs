@@ -1,11 +1,8 @@
 ﻿using System.IO;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
-
 
 namespace ScriptTemplatesGenerator
 {
@@ -15,7 +12,7 @@ namespace ScriptTemplatesGenerator
     public class ScriptTemplatesGenerator : EndNameEditAction
     {
         // --------------------------------------------
-        #region // 各種定義・宣言
+        #region // Constants
 
         /// <summary>
         /// テンプレートパス
@@ -27,25 +24,48 @@ namespace ScriptTemplatesGenerator
         /// </summary>
         const string CommonMenuRoot = "Assets/Create/";
 
-        #endregion // 各種定義・宣言
+        #endregion // Constants
 
         // ==============================================
         #region // MenuItem
 
         /// <summary>
-        /// C# Script生成処理
+        /// C# Scriptテンプレート生成処理
         /// </summary>
         [MenuItem(ScriptTemplatesGenerator.CommonMenuRoot + "C# Script(Original)", false, 64)]
         public static void CreateNewBehaviourScript()
         {
             var resFile = Path.Combine(Application.dataPath, ScriptTemplatesGenerator.TemplatesPath + "/Script-NewBehaviourScript.cs.txt");
-            CreateScript(resFile);
+            Texture2D icon = EditorGUIUtility.IconContent("cs Script icon").image as Texture2D;
+            CreateFile(resFile, icon, "NewBehaviourScript.cs");
+        }
+
+        /// <summary>
+        /// UnlitShaderテンプレート生成処理
+        /// </summary>
+        [MenuItem(ScriptTemplatesGenerator.CommonMenuRoot + "New Unlit Shader", false, 65)]
+        public static void CreateNewSampleShader()
+        {
+            var resFile = Path.Combine(Application.dataPath, ScriptTemplatesGenerator.TemplatesPath + "/Shader-NewUnlitShader.shader.txt");
+            Texture2D icon = EditorGUIUtility.IconContent("Shader Icon").image as Texture2D;
+            CreateFile(resFile, icon, "NewUnlitShader.shader");
+        }
+
+        /// <summary>
+        /// cgincテンプレート生成処理
+        /// </summary>
+        [MenuItem(ScriptTemplatesGenerator.CommonMenuRoot + "New cginc", false, 66)]
+        public static void CreateNewCgInc()
+        {
+            var resFile = Path.Combine(Application.dataPath, ScriptTemplatesGenerator.TemplatesPath + "/Shader-NewCginc.cginc.txt");
+            Texture2D icon = EditorGUIUtility.IconContent("Shader Icon").image as Texture2D;
+            CreateFile(resFile, icon, "NewCginc.cginc");
         }
 
         #endregion // MenuItem
 
         // ==============================================
-        #region // override
+        #region // Override
 
         /// <summary>
         /// 生成処理
@@ -61,32 +81,34 @@ namespace ScriptTemplatesGenerator
             // スペースを削除
             className = className.Replace(" ", "");
             // ファイル名から拡張子を抜いた物をクラス名に設定
-            text = text.Replace("#SCRIPTNAME#", className);
+            text = text.Replace("#NAME#", className);
 
             // UTF8(BOM付き)
             var encoding = new UTF8Encoding(true, false);
             File.WriteAllText(pathName, text, encoding);
             AssetDatabase.ImportAsset(pathName);
-            var asset = AssetDatabase.LoadAssetAtPath<MonoScript>(pathName);
-            ProjectWindowUtil.ShowCreatedAsset(asset);
+
+            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(pathName);
+            ProjectWindowUtil.ShowCreatedAsset (asset);
         }
 
-        #endregion // override
+        #endregion // Override
 
         // ==============================================
-        #region // private method
+        #region // Private Methods
 
         /// <summary>
         /// ファイル生成処理
         /// </summary>
         /// <param name="resFile">リソース情報</param>
-        static void CreateScript(string resFile)
+        /// <param name="iconTexture">アイコンのTexture</param>
+        /// <param name="createFileName">生成するファイル名(拡張子も含めること)</param>
+        static void CreateFile(string resFile, Texture2D iconTexture, string createFileName)
         {
-            Texture2D csicon = EditorGUIUtility.IconContent("cs Script icon").image as Texture2D;
             var endNameEditAction = ScriptableObject.CreateInstance<ScriptTemplatesGenerator>();
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, endNameEditAction, "NewCSharpScript.cs", csicon, resFile);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, endNameEditAction, createFileName, iconTexture, resFile);
         }
 
-        #endregion // private method
+        #endregion // Private Methods
     }
 }

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace MainContents
 {
-    public class #SCRIPTNAME# : MonoBehaviour
+    public class #NAME# : MonoBehaviour
     {
         // Use this for initialization
         void Start ()
